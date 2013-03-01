@@ -609,6 +609,29 @@ class PHPUnitRunnerTest extends CompatibilityTestCase
         $failures = $this->createXPath()->query(sprintf("//testsuite[@name='%s']/testsuite[@name='failsWithWarning']/testcase[@name='Warning']/failure", $testClass));
         $this->assertThat($failures->length, $this->equalTo(1));
     }
+
+    /**
+     * @test
+     */
+    public function fixPhpUnitFilesList()
+    {
+        try
+        {
+            $this->fail("!!!");
+        }
+        catch (\PHPUnit_Framework_AssertionFailedError $ex)
+        {
+            $trace = \PHPUnit_Util_Filter::getFilteredStacktrace($ex);
+        }
+
+        $this->assertContains(__FILE__, $trace);
+
+        $trace = str_replace(__FILE__, " ", $trace);
+
+        $this->assertNotContains('Symfony', $trace);
+        $this->assertNotContains('Stagehand', $trace);
+        $this->assertNotContains('TestRunner', $trace);
+    }
 }
 
 /*

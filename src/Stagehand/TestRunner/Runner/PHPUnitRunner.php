@@ -74,6 +74,8 @@ class PHPUnitRunner extends Runner
      */
     public function run($suite)
     {
+        $this->fixPHPUnitFilesList();
+
         $printer = $this->createPrinter();
         $testResult = new \PHPUnit_Framework_TestResult();
         $testRunner = new TestRunner();
@@ -157,6 +159,31 @@ class PHPUnitRunner extends Runner
         }
 
         return $arguments;
+    }
+
+    protected function fixPHPUnitFilesList()
+    {
+        static $fixed = false;
+
+        if (!$fixed) {
+            $fixed = true;
+
+            $list = array();
+            $traces = debug_backtrace(false);
+
+            foreach ($traces as $trace) {
+                if (isset($trace['file'])) {
+                    $list[$trace['file']] = true;
+                }
+            }
+
+            \PHPUnit_Util_GlobalState::phpunitFiles();
+
+            $ref = new \ReflectionProperty('PHPUnit_Util_GlobalState', 'phpunitFiles');
+            $ref->setAccessible(true);
+            $files = $ref->getValue() + $list;
+            $ref->setValue(null, $files);
+        }
     }
 }
 
