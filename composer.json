@@ -34,7 +34,7 @@
     "autoload": {
         "psr-0": { "Stagehand\\TestRunner": "src/" }
     },
-    "bin": ["bin/testrunner"],
+    "bin": ["composer/testrunner"],
     "extra": {
         "branch-alias": {
             "dev-master": "4.0.x-dev"
